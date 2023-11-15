@@ -6,47 +6,61 @@
 #include "main.h"
 
 /**
- * main - excutes our simple shell
- * @ac: number of arguments passed
- * @av: array of arguments
- * @env: our environment variable
- * Return: returns 0 on sucess
+ * shell - excutes our shell program prompt, getcommand, excute
+ * @envi: acepts environment from main and use it
+ * @prog: the name of the program used to excute
  */
-int main(int ac, char **av, char **env)
+
+void shell(char **envi, char *prog)
 {
 	size_t line_size = 20;
 	char *line = malloc(sizeof(char) * line_size);
 	char *line_array[] = {NULL, NULL};
 	int last_char;
 	ssize_t len;
+
+	printf("#cisfun$ ");
+	len = getline(&line, &line_size, stdin);
+	if (len != -1)
+	{
+		last_char = strlen(line);
+		if (line[last_char - 1] != 10)
+			printf("\n");
+		line_array[0] = strtok(line, "\n");
+		if (execve(line_array[0], line_array, envi) == -1)
+			printf("%s: No such file or directory\n", prog);
+	}
+	else
+		printf("\n");
+	free(line);
+}
+/**
+ * main - excutes our simple shell
+ * @ac: number of arguments passed
+ * @av: array of arguments
+ * @env: our environment variable
+ * Return: returns 0 on sucess
+ */
+
+int main(int ac, char **av, char **env)
+{
 	pid_t child = 1;
-	int status;
+	int wait_status;
 
 	(void)ac;
 	(void)av;
-	while (child != 0)
+	if (isatty(0))
 	{
-		child = fork();
-		wait(&status);
-	}
-
-	if (child == 0)
-	{
-		printf("#cisfun$ ");
-		len = getline(&line, &line_size, stdin);
-		if (len != -1)
+		while (child)
 		{
-			last_char = strlen(line);
-			if (line[last_char - 1] != 10)
-				printf("\n");
-			line_array[0] = strtok(line, "\n");
-			if (execve(line_array[0], line_array, env) == -1)
-				printf("./shell: No such file or directory\n");
+			child = fork();
+			wait(&wait_status);
+			if (!child)
+				shell(env, av[0]);
 		}
-		else
-			printf("\n");
-
-		free(line);
 	}
+	else
+		shell(env, av[0]);
+
 	return (0);
 }
