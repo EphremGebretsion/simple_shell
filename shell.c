@@ -8,9 +8,10 @@
 /**
  * shell - excutes our shell program prompt, getcommand, excute
  * @envi: acepts environment from main and use it
+ * @prog: the name of the program used to excute
  */
 
-void shell(char **envi)
+void shell(char **envi, char *prog)
 {
 	size_t line_size = 20;
 	char *line = malloc(sizeof(char) * line_size);
@@ -25,9 +26,12 @@ void shell(char **envi)
 		last_char = strlen(line);
 		if (line[last_char - 1] != 10)
 			printf("\n");
-		line_array[0] = strtok(line, "\n");
-		if (execve(line_array[0], line_array, envi) == -1)
-			printf("./shell: No such file or directory\n");
+		else
+		{
+			line_array[0] = strtok(line, "\n");
+			if (execve(line_array[0], line_array, envi) == -1)
+				printf("%s: No such file or directory\n", prog);
+		}
 	}
 	else
 		printf("\n");
@@ -47,7 +51,6 @@ int main(int ac, char **av, char **env)
 	int wait_status;
 
 	(void)ac;
-	(void)av;
 	if (isatty(0))
 	{
 		while (child)
@@ -55,11 +58,11 @@ int main(int ac, char **av, char **env)
 			child = fork();
 			wait(&wait_status);
 			if (!child)
-				shell(env);
+				shell(env, av[0]);
 		}
 	}
 	else
-		shell(env);
+		shell(env, av[0]);
 
 	return (0);
 }
