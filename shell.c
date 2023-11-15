@@ -18,7 +18,7 @@ void shell(char **envi, char *prog)
 	char *line_array[] = {NULL, NULL};
 	ssize_t len;
 
-	printf("#cisfun$ ");
+	printf("$ ");
 	len = getline(&line, &line_size, stdin);
 	if (len != -1)
 	{
