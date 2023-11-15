@@ -30,7 +30,7 @@ void shell(char **envi, char *prog)
 		{
 			line_array[0] = strtok(line, "\n");
 			if (execve(line_array[0], line_array, envi) == -1)
-				printf("%s: No such file or directory\n", prog);
+				perror((const char *)prog);
 		}
 	}
 	else
