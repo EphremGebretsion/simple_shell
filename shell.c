@@ -27,7 +27,10 @@ void shell(char **envi, char *prog)
 			perror((const char *)prog);
 	}
 	else
+	{
 		printf("\n");
+		exit(2);
+	}
 	free(line);
 }
 /**
@@ -50,6 +53,11 @@ int main(int ac, char **av, char **env)
 		{
 			child = fork();
 			wait(&wait_status);
+			if (child)
+			{
+				if (wait_status)
+					return (0);
+			}
 			if (!child)
 				shell(env, av[0]);
 		}
