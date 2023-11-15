@@ -17,6 +17,7 @@ int main(int ac, char **av, char **env)
 	size_t line_size = 20;
 	char *line = malloc(sizeof(char) * line_size);
 	char *line_array[] = {NULL, NULL};
+	int last_char;
 	ssize_t len;
 	pid_t child = 1;
 	int status;
@@ -35,10 +36,16 @@ int main(int ac, char **av, char **env)
 		len = getline(&line, &line_size, stdin);
 		if (len != -1)
 		{
+			last_char = strlen(line);
+			if (line[last_char - 1] != 10)
+				printf("\n");
 			line_array[0] = strtok(line, "\n");
 			if (execve(line_array[0], line_array, env) == -1)
 				printf("./shell: No such file or directory\n");
 		}
+		else
+			printf("\n");
+
 		free(line);
 	}
 	return (0);
