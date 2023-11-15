@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include "main.h"
 
 /**
  * main - excutes our simple shell
@@ -16,22 +18,28 @@ int main(int ac, char **av, char **env)
 	char *line = malloc(sizeof(char) * line_size);
 	char *line_array[] = {NULL, NULL};
 	ssize_t len;
-	int i = 0;
+	pid_t child = 1;
+	int status;
 
-	while (1)
+	(void)ac;
+	(void)av;
+	while (child != 0)
 	{
-		printf("first = %s\nsec = %s\n", line_array[0], line_array[1]);
+		child = fork();
+		wait(&status);
+	}
+
+	if (child == 0)
+	{
 		printf("#cisfun$ ");
 		len = getline(&line, &line_size, stdin);
 		if (len != -1)
 		{
-			printf("no this part \n");
 			line_array[0] = strtok(line, "\n");
-			printf("this part\n");
 			if (execve(line_array[0], line_array, env) == -1)
 				printf("./shell: No such file or directory\n");
-			free(line);
 		}
+		free(line);
 	}
 	return (0);
 }
