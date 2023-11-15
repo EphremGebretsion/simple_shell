@@ -28,7 +28,7 @@ void shell(char **envi, char *prog)
 			printf("\n");
 		line_array[0] = strtok(line, "\n");
 		if (execve(line_array[0], line_array, envi) == -1)
-			printf("%s: No such file or directory\n", prog);
+			printf("./shell: No such file or directory\n", prog);
 	}
 	else
 		printf("\n");
