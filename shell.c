@@ -16,22 +16,15 @@ void shell(char **envi, char *prog)
 	size_t line_size = 20;
 	char *line = malloc(sizeof(char) * line_size);
 	char *line_array[] = {NULL, NULL};
-	int last_char;
 	ssize_t len;
 
 	printf("#cisfun$ ");
 	len = getline(&line, &line_size, stdin);
 	if (len != -1)
 	{
-		last_char = strlen(line);
-		if (line[last_char - 1] != 10)
-			printf("\n");
-		else
-		{
-			line_array[0] = strtok(line, "\n");
-			if (execve(line_array[0], line_array, envi) == -1)
-				perror((const char *)prog);
-		}
+		line_array[0] = strtok(line, "\n");
+		if (execve(line_array[0], line_array, envi) == -1)
+			perror((const char *)prog);
 	}
 	else
 		printf("\n");
