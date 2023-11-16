@@ -9,7 +9,7 @@
  * shell - excutes our shell program prompt, getcommand, excute
  * @envi: acepts environment from main and use it
  * @prog: the name of the program used to excute
- * @prompt: enables(1) or desables(0) prompt 
+ * @prompt: enables(1) or desables(0) prompt
  */
 
 void shell(char **envi, char *prog, int prompt)
@@ -22,7 +22,7 @@ void shell(char **envi, char *prog, int prompt)
 	if (prompt)
 		printf("$ ");
 	len = getline(&line, &line_size, stdin);
-	while(len != -1)
+	while (len != -1)
 	{
 		line_array[0] = strtok(line, "\n");
 		if (execve(line_array[0], line_array, envi) == -1)
