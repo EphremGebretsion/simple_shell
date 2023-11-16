@@ -6,76 +6,38 @@
 #include "main.h"
 
 /**
- * shell - executes our shell by looping
- * @envi: accepts environment form main for use
- * @prompt: used to choose (terminal or pipline) mode
- * @prog: the program name
- * Return: returns the exit status
+ * shell - excutes our shell program prompt, getcommand, excute
+ * @envi: acepts environment from main and use it
+ * @prog: the name of the program used to excute
+ * @prompt: enables(1) or desables(0) prompt 
  */
-int shell(char **envi, int prompt, char *prog)
+
+void shell(char **envi, char *prog, int prompt)
 {
-	ssize_t len;
 	size_t line_size = 20;
 	char *line = malloc(sizeof(char) * line_size);
 	char *line_array[] = {NULL, NULL};
+	ssize_t len;
 
-	if (!prompt)
+	if (prompt)
+		printf("$ ");
+	len = getline(&line, &line_size, stdin);
+	while(len != -1)
 	{
-		printf("in prompt\n");
+		line_array[0] = strtok(line, "\n");
+		if (execve(line_array[0], line_array, envi) == -1)
+			perror((const char *)prog);
+		if (prompt)
+			break;
 		len = getline(&line, &line_size, stdin);
-		while (len != -1)
-		{
-			line_array[0] = strtok(line, "\n");
-			shell_exec(line_array, envi, prog);
-			len = getline(&line, &line_size, stdin);
-		}
 	}
-	else
+	if (len == -1 && prompt)
 	{
-		printf("in pipe\n");
-		while (1)
-		{
-			printf("$ ");
-			len = getline(&line, &line_size, stdin);
-			if (len != -1)
-			{
-				printf("ggg\n");
-				line_array[0] = strtok(line, "\n");
-				shell_exec(line_array, envi, prog);
-			}
-			else
-			{
-				printf("end foind\n");
-				return (1);
-			}
-		}
+		printf("\n");
+		exit(2);
 	}
-
+	free(line);
 }
-
-/**
- * shell_exec - excutes the command on child process
- * @com: command being excuted
- * @envi: environment to use
- * @prog: the program name
- * Return: exit status of excution
- */
-int shell_exec(char **com, char **envi, char *prog)
-{
-	int wait_status;
-	pid_t child;
-
-	child = fork();
-	if (!child)
-	{
-		if (execve(com[0], com, envi) == -1)
-			perror((const char *)
-	}
-	wait(&wait_status);
-
-	return (wait_status);
-}
-
 /**
  * main - excutes our simple shell
  * @ac: number of arguments passed
@@ -86,16 +48,26 @@ int shell_exec(char **com, char **envi, char *prog)
 
 int main(int ac, char **av, char **env)
 {
+	pid_t child = 1;
+	int wait_status;
+
 	(void)ac;
 	if (isatty(0))
 	{
-		printf("ppp\n");
-		shell(env, 1, av[0]);
+		while (child)
+		{
+			child = fork();
+			wait(&wait_status);
+			if (child)
+			{
+				if (wait_status)
+					return (0);
+			}
+			if (!child)
+				shell(env, av[0], 1);
+		}
 	}
 	else
-	{
-		printf("nnn\n");
-		shell(env, 0, av[0]);
-	}
+		shell(env, av[0], 0);
 	return (0);
 }
