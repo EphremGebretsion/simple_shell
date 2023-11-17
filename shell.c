@@ -80,7 +80,7 @@ int shell_exec(char **envi, char *prog, int prompt)
 	{
 		if (prompt)
 		{
-			printf("$ ");
+			printf("($) ");
 			len = getline(&line, &line_size, stdin);
 			line_array[0] = strtok(line, "\n");
 			if (len == -1)
